@@ -13,27 +13,16 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+    main.cpp
+    mainwindow.cpp
+    renderwidget.cpp
+    field.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Match3
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        renderwidget.h renderwidget.cpp
-
-        field.h field.cpp
-
-
-
-
-
-
-
-
 
 
 
@@ -52,6 +41,7 @@ else()
     else()
         add_executable(Match3
             ${PROJECT_SOURCES}
+            field.h
         )
     endif()
 endif()
@@ -82,3 +72,6 @@ install(TARGETS Match3
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(Match3)
 endif()
+
+set(QT_QMAKE_EXECUTABLE "/opt/homebrew/opt/qt@5/bin/qmake" CACHE FILEPATH "Path to qmake" FORCE)
+set(CMAKE_PREFIX_PATH "/opt/homebrew/opt/qt@5" CACHE PATH "Qt prefix path" FORCE)

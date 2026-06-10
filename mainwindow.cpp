@@ -3,6 +3,7 @@
 
 #include <QLayout>
 #include <QVBoxLayout>
+#include <QDebug>
 
 #include "renderwidget.h"
 
@@ -12,11 +13,17 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setWindowTitle("Match-3");
+    setWindowTitle("Hello world");
 
     auto* renderWidget = new RenderWidget(this);
+    button = new QPushButton("Press");
+
     QVBoxLayout *containerLayout = new QVBoxLayout(ui->renderWidgetContainer);
     containerLayout->addWidget(renderWidget);
+    containerLayout->addWidget(button);
+
+    connect(button, &QPushButton::clicked, [this](){ qDebug() << "Hello world\n";});
+
 }
 
 MainWindow::~MainWindow()

@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+#include <iostream>
+
 #include "field.h"
 
 RenderWidget::RenderWidget(QWidget *parent)
@@ -34,7 +36,8 @@ void RenderWidget::paintEvent(QPaintEvent *event)
 
 void RenderWidget::mousePressEvent(QMouseEvent *event)
 {
-    field_.click(event->position().x(), event->position().y());
+    field_.click(event->pos().x(), event->pos().y());
+    std::cout << event->pos().x() << event->pos().y() << '\n';
     QWidget::mousePressEvent(event);
 }
 

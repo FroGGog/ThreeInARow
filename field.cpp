@@ -1,9 +1,5 @@
 #include "field.h"
 
-Field::Field()
-{
-
-}
 
 void Field::update(double dt)
 {
