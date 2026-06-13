@@ -42,6 +42,8 @@ else()
         add_executable(Match3
             ${PROJECT_SOURCES}
             field.h
+            igameobject.h
+            memory_pool.h
         )
     endif()
 endif()

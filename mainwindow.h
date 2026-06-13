@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QPushButton>
 
+#include "memory_pool.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -21,6 +23,8 @@ public:
 private:
     Ui::MainWindow *ui;
     QPushButton* button;
+
+    MemoryPool<int, 100> m_pool;
 
 };
 #endif // MAINWINDOW_H

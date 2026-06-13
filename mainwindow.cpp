@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     containerLayout->addWidget(renderWidget);
     containerLayout->addWidget(button);
 
-    connect(button, &QPushButton::clicked, [this](){ qDebug() << "Hello world\n";});
+    connect(button, &QPushButton::clicked, [this](){ qDebug() << "Created\n";});
 
 }
 
