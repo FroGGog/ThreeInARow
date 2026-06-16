@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QDebug>
 #include <memory>
+#include <unordered_set>
 
 #include "memory_pool.h"
 #include "igameobject.h"
@@ -27,7 +28,69 @@ private:
 
     std::array<std::array<CircleObjPtr, 10>, 10> m_circles;
 
+    std::vector<CircleObjPtr> m_to_delete;
     PoolType m_objects_pool;
+
+    void findAndMarkMatches()
+    {
+        for(size_t row = 0; row < 10; ++row)
+        {
+            for(size_t coll = 0; coll + 2 < 10; ++coll)
+            {
+                if(m_circles[row][coll] == nullptr ||
+                    m_circles[row][coll + 1] == nullptr ||
+                    m_circles[row][coll + 2] == nullptr)
+                {
+                    continue;
+                }
+
+                // all three in a row equal
+                if(m_circles[row][coll]->getColor() == m_circles[row][coll + 1]->getColor() &&
+                        m_circles[row][coll + 1]->getColor() == m_circles[row][coll + 2]->getColor())
+                {
+                    QColor saved_color = m_circles[row][coll]->getColor();
+
+                    size_t start = coll;
+
+                    while(start < 10 && m_circles[row][start] != nullptr && m_circles[row][start]->getColor() == saved_color)
+                    {
+                        m_to_delete.push_back(std::move(m_circles[row][start]));
+                        start++;
+                    }
+
+                    coll = start;
+                }
+            }
+        }
+
+        for(size_t coll = 0; coll < 10; ++coll)
+        {
+            for(size_t row = 0; row + 2 < 10; ++row)
+            {
+                if(m_circles[row][coll] == nullptr || m_circles[row + 1][coll] == nullptr ||
+                    m_circles[row + 2][coll] == nullptr)
+                {
+                    continue;
+                }
+
+                // all three in a collumn equal
+                if(m_circles[row][coll]->getColor() == m_circles[row + 1][coll]->getColor() &&
+                    m_circles[row + 1][coll]->getColor() == m_circles[row + 2][coll]->getColor())
+                {
+                    QColor saved_color = m_circles[row][coll]->getColor();
+
+                    size_t start = row;
+                    while(start < 10 && m_circles[start][coll] != nullptr && m_circles[start][coll]->getColor() == saved_color)
+                    {
+                        m_to_delete.push_back(std::move((m_circles[start][coll])));
+                        start++;
+                    }
+                    row = start;
+                }
+            }
+        }
+    }
+
 };
 
 

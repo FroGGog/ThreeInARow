@@ -54,7 +54,11 @@ void Field::render(QPainter& painter)
     {
         for(const auto& elem : row)
         {
-            elem->render(painter);
+            if(elem != nullptr)
+            {
+                elem->render(painter);
+            }
+
         }
 
     }
@@ -66,12 +70,40 @@ void Field::resize(double cell_size)
     {
         for(const auto& elem : row)
         {
-            elem->updateGeometry(cell_size);
+            if(elem != nullptr)
+            {
+                elem->updateGeometry(cell_size);
+            }
+
         }
     }
 }
 
 void Field::click(int x, int y)
 {
+    for(const auto& row : m_circles)
+    {
+        for(const auto& elem : row)
+        {
+            if(elem != nullptr)
+            {
+                int dx = x - elem->getCenter().x();
+                int dy = y - elem->getCenter().y();
+                int distance_squared = dx * dx + dy * dy;
+
+                int r = elem->getRadius();
+                int r_squared = r * r;
+
+                if(distance_squared <= r_squared)
+                {
+                    qDebug() << "Got collision\n";
+                    elem->setColor(Qt::cyan);
+                    findAndMarkMatches();
+                }
+
+            }
+        }
+    }
+
 
 }

@@ -97,9 +97,26 @@ public:
         painter.drawEllipse(QPoint{m_xpos + m_xoffset, m_ypos + m_yoffset}, m_xr, m_yr);
     }
 
+    // Setters
+    void setColor(QColor color)
+    {
+        m_color = color;
+    }
+
+    // Getters
     QColor getColor() const
     {
         return m_color;
+    }
+
+    QPoint getCenter() const
+    {
+        return {m_xpos + m_xoffset, m_ypos + m_yoffset};
+    }
+
+    int getRadius() const
+    {
+        return m_xr;
     }
 
 
