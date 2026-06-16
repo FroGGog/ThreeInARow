@@ -6,6 +6,7 @@
 #include <QDebug>
 
 #include <variant>
+#include <cmath>
 
 class CircleObject;
 
@@ -135,6 +136,14 @@ public:
         }, m_state);
     }
 
+    void tickFlicker(double dt)
+    {
+        if(m_is_bomb)
+        {
+            m_flicker_timer += dt;
+        }
+    }
+
     // Setters
     void setColor(QColor color)
     {
@@ -212,16 +221,17 @@ public:
 
     bool isFalling() const
     {
-        if(this == nullptr)
-        {
-            return false;
-        }
         return std::holds_alternative<FallingState>(m_state);
     }
 
     bool isBomb() const
     {
         return m_is_bomb;
+    }
+
+    double getFlickerTimer() const
+    {
+        return m_flicker_timer;
     }
 
 
@@ -241,29 +251,30 @@ private:
 
     // bomb stuff
     bool m_is_bomb = false;
+    double m_flicker_timer = 0.0;
 
 };
 
 // Idle state
 inline void IdleState::update(CircleObject& owner, double dt)
 {
-    return;
+    owner.tickFlicker(dt);
 }
 inline void IdleState::render(const CircleObject& owner, QPainter& painter) const
 {
     if(owner.isBomb())
     {
-        painter.setPen(QPen(Qt::yellow, 1));
-        painter.setBrush(Qt::NoBrush);
-        painter.drawEllipse(owner.getCenter(),
-                            owner.getRadius() + 4,
-                            owner.getRadius() + 4);
+        double alpha = 150.0 + 105.0 * std::sin(owner.getFlickerTimer() * 6.0);
 
-        painter.setBrush(owner.getColor());
+        QColor flicker_color = owner.getColor();
+        flicker_color.setAlpha(static_cast<int>(alpha));
+
+        painter.setBrush(flicker_color);
         painter.setPen(Qt::NoPen);
-        painter.drawEllipse(owner.getCenter(),
-                            owner.getRadius(),
-                            owner.getRadius());
+        painter.drawEllipse(owner.getCenter(), owner.getRadius(), owner.getRadius());
+
+        painter.setPen(QPen(Qt::white, 2));
+        painter.drawEllipse(owner.getCenter(), owner.getRadius(), owner.getRadius());
     }
     else
     {

@@ -136,7 +136,7 @@ private:
     {
         for(size_t coll = 0; coll < 10; ++coll)
         {
-            if(m_circles[0][coll] == nullptr &&!m_circles[1][coll]->isFalling())
+            if(m_circles[0][coll] == nullptr)
             {
                 ObjectColor color = pickRandomColor();
                 if(coll >= 2)
@@ -160,7 +160,7 @@ private:
                 if(obj != nullptr)
                 {
                     // 1% bomb chance
-                    if(QRandomGenerator::global()->bounded(100) < 1)
+                    if(QRandomGenerator::global()->bounded(100) < 2)
                     {
                         obj->setBomb(true);
                     }
