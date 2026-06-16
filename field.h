@@ -140,7 +140,7 @@ private:
     {
         for(size_t coll = 0; coll < 10; ++coll)
         {
-            if(m_circles[0][coll] == nullptr)
+            if(m_circles[0][coll] == nullptr && !m_circles[1][coll]->isFalling())
             {
                 ObjectColor color = pickRandomColor();
                 if(coll >= 2)
@@ -168,6 +168,10 @@ private:
                     m_circles[0][coll] = std::move(obj);
 
                 }
+            }
+            else
+            {
+                continue;
             }
         }
     }

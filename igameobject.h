@@ -27,7 +27,7 @@ struct FallingState
 
     double target_y = 0.0;
     int target_row = 0;
-    double fall_speed = 200.0;
+    double fall_speed = 450.0;
 };
 struct SpawningState
 {
@@ -170,6 +170,7 @@ public:
     }
     void Spawn()
     {
+        m_xr = 0;
         m_state = SpawningState{static_cast<int>(m_cell_size * 0.4)};
     }
 
@@ -202,6 +203,15 @@ public:
     bool isIdle() const
     {
         return std::holds_alternative<IdleState>(m_state);
+    }
+
+    bool isFalling() const
+    {
+        if(this == nullptr)
+        {
+            return false;
+        }
+        return std::holds_alternative<FallingState>(m_state);
     }
 
 
