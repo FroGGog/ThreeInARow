@@ -3,38 +3,40 @@
 
 Field::Field()
 {
-    for(size_t i = 0; i < 10; i++)
+    for(size_t row = 0; row < 10; row++)
     {
-        for(size_t j = 0; j < 10; j++)
+        for(size_t coll = 0; coll < 10; coll++)
         {
             ObjectColor color = pickRandomColor();
             // horizontal check
-            if(j >= 2)
+            if(coll >= 2)
             {
-                while(m_circles[i][j - 1]->getColor() == convertColor(color) &&
-                    m_circles[i][j - 2]->getColor() == convertColor(color))
+                // TODO: add nullptr check
+                while(m_circles[row][coll - 1]->getColor() == convertColor(color) &&
+                    m_circles[row][coll - 2]->getColor() == convertColor(color))
                 {
                     color = pickRandomColor();
                 }
 
             }
             // vertical check
-            if(i >= 2)
+            if(row >= 2)
             {
-                while(m_circles[i-1][j] && m_circles[i-2][j] &&
-                       m_circles[i-1][j]->getColor() == convertColor(color) &&
-                       m_circles[i-2][j]->getColor() == convertColor(color))
+                while(m_circles[row - 1][coll] && m_circles[row - 2][coll] &&
+                       m_circles[row - 1][coll]->getColor() == convertColor(color) &&
+                       m_circles[row - 2][coll]->getColor() == convertColor(color))
                 {
                     color = pickRandomColor();
                 }
             }
 
-            auto obj = m_objects_pool.create(i, j, color);
+            auto obj = m_objects_pool.create(coll, row, color);
             // update geometry with default base value
-            obj->updateGeometry(64);
+
             if(obj != nullptr)
             {
-                m_circles[i][j] = std::move(obj);
+                obj->updateGeometry(64);
+                m_circles[row][coll] = std::move(obj);
             }
 
 
@@ -56,6 +58,7 @@ void Field::update(double dt)
     }
 
     processDestroyedObjects();
+    proceedGravity();
 }
 
 void Field::render(QPainter& painter)

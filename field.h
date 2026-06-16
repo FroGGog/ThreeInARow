@@ -103,12 +103,39 @@ private:
         {
             for(size_t row = 0; row < 10; ++row)
             {
-                if(m_circles[coll][row] != nullptr && m_circles[coll][row]->getRadius() <= 0)
+                if(m_circles[row][coll] != nullptr && m_circles[row][coll]->getRadius() <= 0)
                 {
-                    m_circles[coll][row] = nullptr;
+                    m_circles[row][coll] = nullptr;
                 }
             }
         }
+    }
+
+    void proceedGravity()
+    {
+        for(size_t coll = 0; coll < 10; ++coll)
+        {
+            for(int row = 9; row >= 0; --row)
+            {
+                if(m_circles[row][coll] == nullptr)
+                {
+                    for(int k = row - 1; k >= 0; --k)
+                    {
+                        if(m_circles[k][coll] != nullptr && m_circles[k][coll]->isIdle())
+                        {
+                            auto falling_obj = std::move(m_circles[k][coll]);
+                            falling_obj->startFalling(row);
+                            m_circles[row][coll] = std::move(falling_obj);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
     }
 
 };
