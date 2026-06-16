@@ -12,7 +12,8 @@ Field::Field()
             if(coll >= 2)
             {
                 // TODO: add nullptr check
-                while(m_circles[row][coll - 1]->getColor() == convertColor(color) &&
+                while(m_circles[row][coll - 1] && m_circles[row][coll - 2] &&
+                       m_circles[row][coll - 1]->getColor() == convertColor(color) &&
                     m_circles[row][coll - 2]->getColor() == convertColor(color))
                 {
                     color = pickRandomColor();
@@ -31,10 +32,10 @@ Field::Field()
             }
 
             auto obj = m_objects_pool.create(coll, row, color);
-            // update geometry with default base value
 
             if(obj != nullptr)
             {
+                // update geometry with default base value
                 obj->updateGeometry(64);
                 m_circles[row][coll] = std::move(obj);
             }
@@ -59,6 +60,7 @@ void Field::update(double dt)
 
     processDestroyedObjects();
     proceedGravity();
+    spawnNewObjects();
 }
 
 void Field::render(QPainter& painter)
@@ -80,6 +82,8 @@ void Field::render(QPainter& painter)
 
 void Field::resize(double cell_size)
 {
+    m_cell_size = cell_size;
+
     for(const auto& row : m_circles)
     {
         for(const auto& elem : row)

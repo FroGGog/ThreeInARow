@@ -32,6 +32,8 @@ private:
     std::vector<CircleObjPtr> m_to_delete;
     PoolType m_objects_pool;
 
+    int m_cell_size;
+
     void findAndMarkMatches()
     {
         for(size_t row = 0; row < 10; ++row)
@@ -132,11 +134,44 @@ private:
                 }
             }
         }
-
-
-
-
     }
+
+    void spawnNewObjects()
+    {
+        for(size_t coll = 0; coll < 10; ++coll)
+        {
+            if(m_circles[0][coll] == nullptr)
+            {
+                ObjectColor color = pickRandomColor();
+                if(coll >= 2)
+                {
+                    while(m_circles[0][coll - 1]->getColor() == convertColor(color) &&
+                           m_circles[0][coll - 2]->getColor() == convertColor(color))
+                    {
+                        color = pickRandomColor();
+                    }
+                }
+
+                while(m_circles[1][coll] && m_circles[2][coll] && m_circles[1][coll]->getColor() == convertColor(color)
+                        && m_circles[2][coll]->getColor() == convertColor(color))
+                {
+                    color = pickRandomColor();
+                }
+
+                auto obj = m_objects_pool.create(coll, 0, color);
+
+                if(obj != nullptr)
+                {
+                    // update geometry with default base value
+                    obj->updateGeometry(m_cell_size);
+                    obj->Spawn();
+                    m_circles[0][coll] = std::move(obj);
+
+                }
+            }
+        }
+    }
+
 
 };
 

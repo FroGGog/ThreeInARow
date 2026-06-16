@@ -168,6 +168,10 @@ public:
     {
         m_state = IdleState{};
     }
+    void Spawn()
+    {
+        m_state = SpawningState{static_cast<int>(m_cell_size * 0.4)};
+    }
 
     // Getters
     QColor getColor() const
