@@ -11,10 +11,13 @@ RenderWidget::RenderWidget(QWidget *parent)
 {
     setAttribute(Qt::WA_OpaquePaintEvent);
 
+
     connect(&timer_, &QTimer::timeout, this, &RenderWidget::tick);
 
     timer_.start(16);
     frameTimer_.start();
+
+    field_.resize(width() / 10);
 }
 
 RenderWidget::~RenderWidget()

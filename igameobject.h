@@ -92,7 +92,8 @@ public:
 
     void render (QPainter& painter) const override
     {
-        painter.setPen(m_color);
+        painter.setBrush(m_color);
+        painter.setPen(Qt::NoPen);
         painter.drawEllipse(QPoint{m_xpos + m_xoffset, m_ypos + m_yoffset}, m_xr, m_yr);
     }
 

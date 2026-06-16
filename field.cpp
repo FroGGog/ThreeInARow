@@ -8,7 +8,7 @@ Field::Field()
         for(size_t j = 0; j < 10; j++)
         {
             ObjectColor color = pickRandomColor();
-            // vertical check
+            // horizontal check
             if(j >= 2)
             {
                 while(m_circles[i][j - 1]->getColor() == convertColor(color) &&
@@ -18,7 +18,7 @@ Field::Field()
                 }
 
             }
-            // horizontal check
+            // vertical check
             if(i >= 2)
             {
                 while(m_circles[i-1][j] && m_circles[i-2][j] &&
@@ -30,6 +30,8 @@ Field::Field()
             }
 
             auto obj = m_objects_pool.create(i, j, color);
+            // update geometry with default base value
+            obj->updateGeometry(64);
             if(obj != nullptr)
             {
                 m_circles[i][j] = std::move(obj);
