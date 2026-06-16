@@ -159,6 +159,14 @@ public:
         m_xpos = point.x();
         m_ypos = point.y();
     }
+    void setGridPos(int new_row, int new_coll)
+    {
+        m_row = new_row;
+        m_coll = new_coll;
+
+        m_xpos = m_coll * m_cell_size;
+        m_ypos = m_row * m_cell_size;
+    }
     void setGridRowPosition(int new_row)
     {
         m_row = new_row;

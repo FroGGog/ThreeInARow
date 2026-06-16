@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <memory>
 #include <set>
+#include <optional>
 
 #include "memory_pool.h"
 #include "igameobject.h"
@@ -32,7 +33,8 @@ private:
 
     PoolType m_objects_pool;
 
-    int m_cell_size;
+    int m_cell_size = 0;
+    std::optional<std::pair<int, int>> m_selected_pos = std::nullopt;
 
     void findAndMarkMatches()
     {
@@ -193,14 +195,34 @@ private:
                 }
             }
         }
-        destroyMarkedObjects();
+
     }
 
     void destroyMarkedObjects()
     {
+        std::vector<std::pair<int, int>> bombs_to_trigger;
+
         for(const auto& elem : m_coord_to_delete)
         {
-            m_circles[elem.first][elem.second]->Destroy();
+            if(m_circles[elem.first][elem.second] != nullptr &&
+                m_circles[elem.first][elem.second]->isBomb())
+            {
+                bombs_to_trigger.push_back(elem);
+            }
+        }
+
+        for(const auto& bomb_pos : bombs_to_trigger)
+        {
+            triggerBomb(m_circles[bomb_pos.first][bomb_pos.second].get());
+        }
+
+
+        for(const auto& elem : m_coord_to_delete)
+        {
+            if(m_circles[elem.first][elem.second] != nullptr)
+            {
+                m_circles[elem.first][elem.second]->Destroy();
+            }
         }
         m_coord_to_delete.clear();
     }
