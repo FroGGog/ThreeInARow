@@ -4,7 +4,7 @@
 #include <QPainter>
 #include <QDebug>
 #include <memory>
-#include <unordered_set>
+#include <set>
 
 #include "memory_pool.h"
 #include "igameobject.h"
@@ -28,6 +28,7 @@ private:
 
     std::array<std::array<CircleObjPtr, 10>, 10> m_circles;
 
+    std::set<std::pair<int, int>> m_coord_to_delete;
     std::vector<CircleObjPtr> m_to_delete;
     PoolType m_objects_pool;
 
@@ -54,11 +55,10 @@ private:
 
                     while(start < 10 && m_circles[row][start] != nullptr && m_circles[row][start]->getColor() == saved_color)
                     {
-                        m_to_delete.push_back(std::move(m_circles[row][start]));
+                        m_coord_to_delete.insert(std::pair<int, int>{row, start});
                         start++;
                     }
-
-                    coll = start;
+                    coll = start - 1;
                 }
             }
         }
@@ -82,13 +82,19 @@ private:
                     size_t start = row;
                     while(start < 10 && m_circles[start][coll] != nullptr && m_circles[start][coll]->getColor() == saved_color)
                     {
-                        m_to_delete.push_back(std::move((m_circles[start][coll])));
+                        m_coord_to_delete.insert(std::pair<int, int>{start, coll});
                         start++;
                     }
-                    row = start;
+                    row = start - 1;
                 }
             }
         }
+
+        for(const auto& elem : m_coord_to_delete)
+        {
+            m_to_delete.push_back(std::move(m_circles[elem.first][elem.second]));
+        }
+        m_coord_to_delete.clear();
     }
 
 };
