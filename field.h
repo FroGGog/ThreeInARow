@@ -93,9 +93,22 @@ private:
         for(const auto& elem : m_coord_to_delete)
         {
             m_circles[elem.first][elem.second]->Destroy();
-            // m_to_delete.push_back(std::move(m_circles[elem.first][elem.second]));
         }
         m_coord_to_delete.clear();
+    }
+
+    void processDestroyedObjects()
+    {
+        for(size_t coll = 0; coll < 10; ++coll)
+        {
+            for(size_t row = 0; row < 10; ++row)
+            {
+                if(m_circles[coll][row] != nullptr && m_circles[coll][row]->getRadius() <= 0)
+                {
+                    m_circles[coll][row] = nullptr;
+                }
+            }
+        }
     }
 
 };

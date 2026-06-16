@@ -48,9 +48,14 @@ void Field::update(double dt)
     {
         for(const auto& elem : row)
         {
-            elem->update(dt);
+            if(elem != nullptr)
+            {
+                elem->update(dt);
+            }
         }
     }
+
+    processDestroyedObjects();
 }
 
 void Field::render(QPainter& painter)
