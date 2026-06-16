@@ -5,8 +5,6 @@
 #include <cstddef>
 #include <array>
 
-#include <QDebug>
-
 
 template <typename T, size_t Capacity>
 class MemoryPool
@@ -88,7 +86,6 @@ public:
         m_buffer(allocate(Capacity)),
         m_capacity(Capacity)
     {
-        qDebug() << "Created pool\n";
         std::fill(m_cells.begin(), m_cells.end(), true);
     }
 

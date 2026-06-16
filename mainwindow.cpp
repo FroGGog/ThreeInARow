@@ -3,7 +3,6 @@
 
 #include <QLayout>
 #include <QVBoxLayout>
-#include <QDebug>
 
 #include "renderwidget.h"
 

@@ -2,7 +2,6 @@
 #define FIELD_H
 
 #include <QPainter>
-#include <QDebug>
 #include <memory>
 #include <set>
 #include <optional>
