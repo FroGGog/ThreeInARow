@@ -134,6 +134,7 @@ void Field::click(int x, int y)
     if(clicked_pos.first == -1)
     {
         m_selected_pos.reset();
+        return;
     }
 
     if(!m_selected_pos.has_value())
