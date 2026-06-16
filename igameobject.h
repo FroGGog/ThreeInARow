@@ -4,8 +4,22 @@
 #include <QPainter>
 #include <QRandomGenerator>
 
-enum ObjectColor {NONE, RED, BLUE, GREEN, YELLOW, MAGNETA, CYAN};
+#include <variant>
 
+class CircleObject;
+
+struct IdleState {
+    void update(CircleObject& owner, double dt);
+    void render(const CircleObject& owner, QPainter& painter) const;
+};
+struct DestroyingState {
+    void update(CircleObject& owner, double dt);
+    void render(const CircleObject& owner, QPainter& painter) const;
+
+    int start_radius = 0;
+};
+
+enum ObjectColor {NONE, RED, BLUE, GREEN, YELLOW, MAGNETA, CYAN};
 
 inline ObjectColor pickRandomColor()
 {
@@ -64,6 +78,8 @@ private:
 
 };
 
+
+
 class CircleObject : public IGameObject
 {
 
@@ -75,7 +91,10 @@ public:
 
     void update(double dt) override
     {
-
+        std::visit([this, dt](auto& state)
+                   {
+            state.update(*this, dt);
+        }, m_state);
     }
 
     void updateGeometry(double cell_size)
@@ -92,15 +111,25 @@ public:
 
     void render (QPainter& painter) const override
     {
-        painter.setBrush(m_color);
-        painter.setPen(Qt::NoPen);
-        painter.drawEllipse(QPoint{m_xpos + m_xoffset, m_ypos + m_yoffset}, m_xr, m_yr);
+        std::visit([this, &painter](auto& state)
+                   {
+            state.render(*this, painter);
+        }, m_state);
     }
 
     // Setters
     void setColor(QColor color)
     {
         m_color = color;
+    }
+    void setRadius(int radius)
+    {
+        m_xr = radius;
+        m_yr = radius;
+    }
+    void Destroy()
+    {
+        m_state = DestroyingState{};
     }
 
     // Getters
@@ -130,7 +159,35 @@ private:
 
     QColor m_color;
 
+    std::variant<IdleState, DestroyingState> m_state = IdleState{};
+
 };
+
+
+inline void IdleState::update(CircleObject& owner, double dt)
+{
+    return;
+}
+inline void IdleState::render(const CircleObject& owner, QPainter& painter) const
+{
+    painter.setBrush(owner.getColor());
+    painter.setPen(Qt::NoPen);
+    painter.drawEllipse(owner.getCenter(), owner.getRadius(), owner.getRadius());
+}
+
+
+inline void DestroyingState::update(CircleObject& owner, double dt)
+{
+    start_radius = owner.getRadius() * 0.9;
+    owner.setRadius(start_radius);
+}
+
+inline void DestroyingState::render(const CircleObject& owner, QPainter& painter) const
+{
+    painter.setBrush(owner.getColor());
+    painter.setPen(Qt::NoPen);
+    painter.drawEllipse(owner.getCenter(), start_radius, start_radius);
+}
 
 
 #endif // IGAMEOBJECT_H

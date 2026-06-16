@@ -44,7 +44,13 @@ Field::Field()
 
 void Field::update(double dt)
 {
-
+    for(const auto& row : m_circles)
+    {
+        for(const auto& elem : row)
+        {
+            elem->update(dt);
+        }
+    }
 }
 
 void Field::render(QPainter& painter)
@@ -104,6 +110,4 @@ void Field::click(int x, int y)
             }
         }
     }
-
-
 }

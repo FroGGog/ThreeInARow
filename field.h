@@ -92,7 +92,8 @@ private:
 
         for(const auto& elem : m_coord_to_delete)
         {
-            m_to_delete.push_back(std::move(m_circles[elem.first][elem.second]));
+            m_circles[elem.first][elem.second]->Destroy();
+            // m_to_delete.push_back(std::move(m_circles[elem.first][elem.second]));
         }
         m_coord_to_delete.clear();
     }
