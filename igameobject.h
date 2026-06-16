@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include <QRandomGenerator>
+#include <QDebug>
 
 #include <variant>
 
@@ -27,7 +28,7 @@ struct FallingState
 
     double target_y = 0.0;
     int target_row = 0;
-    double fall_speed = 450.0;
+    double fall_speed = 800.0;
 };
 struct SpawningState
 {
@@ -153,6 +154,10 @@ public:
     {
         m_row = new_row;
     }
+    void setBomb(bool is_bomb)
+    {
+        m_is_bomb = is_bomb;
+    }
 
     // states
     void Destroy()
@@ -214,6 +219,10 @@ public:
         return std::holds_alternative<FallingState>(m_state);
     }
 
+    bool isBomb() const
+    {
+        return m_is_bomb;
+    }
 
 
 private:
@@ -230,6 +239,9 @@ private:
 
     std::variant<IdleState, DestroyingState, FallingState, SpawningState> m_state = IdleState{};
 
+    // bomb stuff
+    bool m_is_bomb = false;
+
 };
 
 // Idle state
@@ -239,9 +251,27 @@ inline void IdleState::update(CircleObject& owner, double dt)
 }
 inline void IdleState::render(const CircleObject& owner, QPainter& painter) const
 {
-    painter.setBrush(owner.getColor());
-    painter.setPen(Qt::NoPen);
-    painter.drawEllipse(owner.getCenter(), owner.getRadius(), owner.getRadius());
+    if(owner.isBomb())
+    {
+        painter.setPen(QPen(Qt::yellow, 1));
+        painter.setBrush(Qt::NoBrush);
+        painter.drawEllipse(owner.getCenter(),
+                            owner.getRadius() + 4,
+                            owner.getRadius() + 4);
+
+        painter.setBrush(owner.getColor());
+        painter.setPen(Qt::NoPen);
+        painter.drawEllipse(owner.getCenter(),
+                            owner.getRadius(),
+                            owner.getRadius());
+    }
+    else
+    {
+        painter.setBrush(owner.getColor());
+        painter.setPen(Qt::NoPen);
+        painter.drawEllipse(owner.getCenter(), owner.getRadius(), owner.getRadius());
+    }
+
 }
 
 // Destory state

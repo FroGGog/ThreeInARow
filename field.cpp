@@ -61,6 +61,7 @@ void Field::update(double dt)
     processDestroyedObjects();
     proceedGravity();
     spawnNewObjects();
+    findAndMarkMatches();
 }
 
 void Field::render(QPainter& painter)
@@ -115,8 +116,16 @@ void Field::click(int x, int y)
                 if(distance_squared <= r_squared)
                 {
                     qDebug() << "Got collision\n";
-                    elem->setColor(Qt::cyan);
-                    findAndMarkMatches();
+                    if(elem->isBomb())
+                    {
+                        triggerBomb(elem.get());
+                    }
+                    else
+                    {
+                        elem->setColor(Qt::cyan);
+                        findAndMarkMatches();
+                    }
+
                 }
 
             }

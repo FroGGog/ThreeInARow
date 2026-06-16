@@ -29,7 +29,7 @@ private:
     std::array<std::array<CircleObjPtr, 10>, 10> m_circles;
 
     std::set<std::pair<int, int>> m_coord_to_delete;
-    std::vector<CircleObjPtr> m_to_delete;
+
     PoolType m_objects_pool;
 
     int m_cell_size;
@@ -91,12 +91,8 @@ private:
                 }
             }
         }
+        destroyMarkedObjects();
 
-        for(const auto& elem : m_coord_to_delete)
-        {
-            m_circles[elem.first][elem.second]->Destroy();
-        }
-        m_coord_to_delete.clear();
     }
 
     void processDestroyedObjects()
@@ -140,12 +136,13 @@ private:
     {
         for(size_t coll = 0; coll < 10; ++coll)
         {
-            if(m_circles[0][coll] == nullptr && !m_circles[1][coll]->isFalling())
+            if(m_circles[0][coll] == nullptr &&!m_circles[1][coll]->isFalling())
             {
                 ObjectColor color = pickRandomColor();
                 if(coll >= 2)
                 {
-                    while(m_circles[0][coll - 1]->getColor() == convertColor(color) &&
+                    while(m_circles[0][coll - 1] && m_circles[0][coll - 2] &&
+                        m_circles[0][coll - 1]->getColor() == convertColor(color) &&
                            m_circles[0][coll - 2]->getColor() == convertColor(color))
                     {
                         color = pickRandomColor();
@@ -162,6 +159,11 @@ private:
 
                 if(obj != nullptr)
                 {
+                    // 1% bomb chance
+                    if(QRandomGenerator::global()->bounded(100) < 1)
+                    {
+                        obj->setBomb(true);
+                    }
                     // update geometry with default base value
                     obj->updateGeometry(m_cell_size);
                     obj->Spawn();
@@ -174,6 +176,33 @@ private:
                 continue;
             }
         }
+    }
+
+    void triggerBomb(CircleObject* ptr)
+    {
+        auto bomb_color = ptr->getColor();
+
+        for(size_t coll = 0; coll < 10; ++coll)
+        {
+            for(size_t row = 0; row < 10; ++row)
+            {
+
+                if(m_circles[row][coll] && m_circles[row][coll]->getColor() == bomb_color)
+                {
+                    m_coord_to_delete.insert({row, coll});
+                }
+            }
+        }
+        destroyMarkedObjects();
+    }
+
+    void destroyMarkedObjects()
+    {
+        for(const auto& elem : m_coord_to_delete)
+        {
+            m_circles[elem.first][elem.second]->Destroy();
+        }
+        m_coord_to_delete.clear();
     }
 
 
