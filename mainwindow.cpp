@@ -16,13 +16,9 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Hello world");
 
     auto* renderWidget = new RenderWidget(this);
-    button = new QPushButton("Press");
 
     QVBoxLayout *containerLayout = new QVBoxLayout(ui->renderWidgetContainer);
     containerLayout->addWidget(renderWidget);
-    containerLayout->addWidget(button);
-
-    connect(button, &QPushButton::clicked, [this](){ qDebug() << "Created\n";});
 
 }
 

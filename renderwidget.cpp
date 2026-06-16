@@ -5,7 +5,6 @@
 
 #include <iostream>
 
-#include "field.h"
 
 RenderWidget::RenderWidget(QWidget *parent)
     : QWidget{parent}
@@ -39,6 +38,11 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
     field_.click(event->pos().x(), event->pos().y());
     std::cout << event->pos().x() << event->pos().y() << '\n';
     QWidget::mousePressEvent(event);
+}
+
+void RenderWidget::resizeEvent(QResizeEvent *event)
+{
+    field_.resize((std::min(event->size().width(), event->size().height()) / 10));
 }
 
 void RenderWidget::tick()
