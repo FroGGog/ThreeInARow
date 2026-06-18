@@ -32,18 +32,38 @@ void RenderWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), Qt::black);
 
+    int field_size = std::min(width(), height());
+    int offset_x = (width() - field_size) / 2;
+    int offset_y = (height() - field_size) / 2;
+
+    painter.translate(offset_x, offset_y);
+
     field_.render(painter);
 }
 
 void RenderWidget::mousePressEvent(QMouseEvent *event)
 {
-    field_.click(event->pos().x(), event->pos().y());
+    int field_size = std::min(width(), height());
+    int offset_x = (width() - field_size) / 2;
+    int offset_y = (height() - field_size) / 2;
+
+    int adjusted_x = event->pos().x() - offset_x;
+    int adjusted_y = event->pos().y() - offset_y;
+
+    if (adjusted_x >= 0 && adjusted_x < field_size &&
+        adjusted_y >= 0 && adjusted_y < field_size) {
+        field_.click(adjusted_x, adjusted_y);
+    }
+
     QWidget::mousePressEvent(event);
 }
 
 void RenderWidget::resizeEvent(QResizeEvent *event)
 {
-    field_.resize((std::min(event->size().width(), event->size().height()) / 10));
+    QWidget::resizeEvent(event);
+
+    int side = std::min(width(), height());
+    field_.resize(side / 10);
 }
 
 void RenderWidget::tick()

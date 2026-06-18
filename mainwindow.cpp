@@ -12,11 +12,17 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setWindowTitle("Hello world");
+    setWindowTitle("Match-3");
+
+    setMinimumSize(400, 400);
+    resize(640, 640);
 
     auto* renderWidget = new RenderWidget(this);
 
     QVBoxLayout *containerLayout = new QVBoxLayout(ui->renderWidgetContainer);
+
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(0);
     containerLayout->addWidget(renderWidget);
 
 }
