@@ -8,6 +8,7 @@
 
 #include "memory_pool.h"
 #include "igameobject.h"
+#include "constants.h"
 
 class Field
 {
@@ -23,10 +24,10 @@ public:
 
 private:
 
-    using PoolType = MemoryPool<CircleObject, 100>;
+    using PoolType = MemoryPool<CircleObject, match3::POOL_SIZE>;
     using CircleObjPtr = std::unique_ptr<CircleObject, PoolType::PoolDeleter>;
 
-    std::array<std::array<CircleObjPtr, 10>, 10> m_circles;
+    std::array<std::array<CircleObjPtr, match3::GRID_SIZE>, match3::GRID_SIZE> m_circles;
 
     std::set<std::pair<int, int>> m_coord_to_delete;
 
@@ -37,9 +38,9 @@ private:
 
     void findAndMarkMatches()
     {
-        for(size_t row = 0; row < 10; ++row)
+        for(size_t row = 0; row < match3::GRID_SIZE; ++row)
         {
-            for(size_t coll = 0; coll + 2 < 10; ++coll)
+            for(size_t coll = 0; coll + 2 < match3::GRID_SIZE; ++coll)
             {
                 if(m_circles[row][coll] == nullptr ||
                     m_circles[row][coll + 1] == nullptr ||
@@ -56,7 +57,8 @@ private:
 
                     size_t start = coll;
 
-                    while(start < 10 && m_circles[row][start] != nullptr && m_circles[row][start]->getColor() == saved_color)
+                    while(start < match3::GRID_SIZE && m_circles[row][start] != nullptr
+                           && m_circles[row][start]->getColor() == saved_color)
                     {
                         m_coord_to_delete.insert(std::pair<int, int>{row, start});
                         start++;
@@ -66,9 +68,9 @@ private:
             }
         }
 
-        for(size_t coll = 0; coll < 10; ++coll)
+        for(size_t coll = 0; coll < match3::GRID_SIZE; ++coll)
         {
-            for(size_t row = 0; row + 2 < 10; ++row)
+            for(size_t row = 0; row + 2 < match3::GRID_SIZE; ++row)
             {
                 if(m_circles[row][coll] == nullptr || m_circles[row + 1][coll] == nullptr ||
                     m_circles[row + 2][coll] == nullptr)
@@ -83,7 +85,8 @@ private:
                     QColor saved_color = m_circles[row][coll]->getColor();
 
                     size_t start = row;
-                    while(start < 10 && m_circles[start][coll] != nullptr && m_circles[start][coll]->getColor() == saved_color)
+                    while(start < match3::GRID_SIZE && m_circles[start][coll] != nullptr
+                           && m_circles[start][coll]->getColor() == saved_color)
                     {
                         m_coord_to_delete.insert(std::pair<int, int>{start, coll});
                         start++;
@@ -98,9 +101,9 @@ private:
 
     void processDestroyedObjects()
     {
-        for(size_t coll = 0; coll < 10; ++coll)
+        for(size_t coll = 0; coll < match3::GRID_SIZE; ++coll)
         {
-            for(size_t row = 0; row < 10; ++row)
+            for(size_t row = 0; row < match3::GRID_SIZE; ++row)
             {
                 if(m_circles[row][coll] != nullptr && m_circles[row][coll]->getRadius() <= 0)
                 {
@@ -112,9 +115,9 @@ private:
 
     void proceedGravity()
     {
-        for(size_t coll = 0; coll < 10; ++coll)
+        for(size_t coll = 0; coll < match3::GRID_SIZE; ++coll)
         {
-            for(int row = 9; row >= 0; --row)
+            for(int row = match3::GRID_SIZE - 1; row >= 0; --row)
             {
                 if(m_circles[row][coll] == nullptr)
                 {
@@ -135,7 +138,7 @@ private:
 
     void spawnNewObjects()
     {
-        for(size_t coll = 0; coll < 10; ++coll)
+        for(size_t coll = 0; coll < match3::GRID_SIZE; ++coll)
         {
             if(m_circles[0][coll] == nullptr)
             {
@@ -161,7 +164,7 @@ private:
                 if(obj != nullptr)
                 {
                     // 1% bomb chance
-                    if(QRandomGenerator::global()->bounded(100) < 2)
+                    if(QRandomGenerator::global()->bounded(100) < match3::BOMB_CHANCE)
                     {
                         obj->setBomb(true);
                     }
@@ -183,9 +186,9 @@ private:
     {
         auto bomb_color = ptr->getColor();
 
-        for(size_t coll = 0; coll < 10; ++coll)
+        for(size_t coll = 0; coll < match3::GRID_SIZE; ++coll)
         {
-            for(size_t row = 0; row < 10; ++row)
+            for(size_t row = 0; row < match3::GRID_SIZE; ++row)
             {
 
                 if(m_circles[row][coll] && m_circles[row][coll]->getColor() == bomb_color)

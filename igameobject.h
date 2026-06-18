@@ -8,6 +8,8 @@
 #include <variant>
 #include <cmath>
 
+#include "constants.h"
+
 class CircleObject;
 
 struct IdleState
@@ -15,6 +17,7 @@ struct IdleState
     void update(CircleObject& owner, double dt);
     void render(const CircleObject& owner, QPainter& painter) const;
 };
+
 struct DestroyingState
 {
     void update(CircleObject& owner, double dt);
@@ -22,6 +25,7 @@ struct DestroyingState
 
     int start_radius = 0;
 };
+
 struct FallingState
 {
     void update(CircleObject& owner, double dt);
@@ -31,6 +35,7 @@ struct FallingState
     int target_row = 0;
     double fall_speed = 800.0;
 };
+
 struct SpawningState
 {
     void update(CircleObject& owner, double dt);
@@ -40,11 +45,11 @@ struct SpawningState
     int current_radius = 0;
 };
 
-enum ObjectColor {NONE, RED, BLUE, GREEN, YELLOW, MAGNETA, CYAN};
+enum class ObjectColor {NONE, RED, BLUE, GREEN, YELLOW, MAGNETA, CYAN};
 
 inline ObjectColor pickRandomColor()
 {
-    int number = QRandomGenerator::global()->bounded(1, 7);
+    int number = QRandomGenerator::global()->bounded(match3::COLOR_MIN, match3::COLOR_MAX);
     switch (number) {
     case 1:
         return ObjectColor::RED;
@@ -124,7 +129,7 @@ public:
 
         m_xpos = m_coll * cell_size;
         m_ypos = m_row * cell_size;
-        m_xr = 0.4 * cell_size;
+        m_xr = match3::CIRCLE_RADIUS_RATIO * cell_size;
         m_yr = m_xr;
     }
 
@@ -193,7 +198,7 @@ public:
     void Spawn()
     {
         m_xr = 0;
-        m_state = SpawningState{static_cast<int>(m_cell_size * 0.4)};
+        m_state = SpawningState{static_cast<int>(m_cell_size * match3::CIRCLE_RADIUS_RATIO)};
     }
 
     // Getters
@@ -244,9 +249,14 @@ public:
 
 
 private:
-    int m_coll, m_row;
-    int m_xpos, m_ypos;
-    int m_xr, m_yr;
+    int m_coll = 0;
+    int m_row = 0;
+
+    int m_xpos = 0;
+    int m_ypos = 0;
+
+    int m_xr = 0;
+    int m_yr = 0;
 
     int m_xoffset = 10;
     int m_yoffset = 25;
@@ -272,7 +282,8 @@ inline void IdleState::render(const CircleObject& owner, QPainter& painter) cons
 {
     if(owner.isBomb())
     {
-        double alpha = 150.0 + 105.0 * std::sin(owner.getFlickerTimer() * 6.0);
+        double alpha = match3::BOMB_FLICKER_BASE_ALPHA + match3::BOMB_FLICKER_ALPHA_RANGE
+                                                             * std::sin(owner.getFlickerTimer() * match3::BOMB_FLICKER_FREQUENCY);
 
         QColor flicker_color = owner.getColor();
         flicker_color.setAlpha(static_cast<int>(alpha));
@@ -296,7 +307,7 @@ inline void IdleState::render(const CircleObject& owner, QPainter& painter) cons
 // Destory state
 inline void DestroyingState::update(CircleObject& owner, double dt)
 {
-    start_radius -= 100.0 * dt;
+    start_radius -= match3::DESTROY_SPEED * dt;
     if (start_radius < 0) {
         start_radius = 0;
     }
@@ -344,7 +355,7 @@ inline void FallingState::render(const CircleObject& owner, QPainter& painter) c
 
 inline void SpawningState::update(CircleObject& owner, double dt)
 {
-    current_radius += 100.0 * dt;
+    current_radius += match3::SPAW_SPEED * dt;
     if (current_radius >= target_radius) {
         current_radius = target_radius;
         owner.Idle();

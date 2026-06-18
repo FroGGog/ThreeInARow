@@ -3,9 +3,9 @@
 
 Field::Field()
 {
-    for(size_t row = 0; row < 10; row++)
+    for(size_t row = 0; row < match3::GRID_SIZE; row++)
     {
-        for(size_t coll = 0; coll < 10; coll++)
+        for(size_t coll = 0; coll < match3::GRID_SIZE; coll++)
         {
             ObjectColor color = pickRandomColor();
             // horizontal check
@@ -36,7 +36,7 @@ Field::Field()
             if(obj != nullptr)
             {
                 // update geometry with default base value
-                obj->updateGeometry(64);
+                obj->updateGeometry(match3::DEFAULT_CELL_SIZE);
                 m_circles[row][coll] = std::move(obj);
             }
 
@@ -67,9 +67,9 @@ void Field::update(double dt)
 void Field::render(QPainter& painter)
 {
 
-    for(int row = 0; row < 10; ++row)
+    for(int row = 0; row < match3::GRID_SIZE; ++row)
     {
-        for(int coll = 0; coll < 10; ++coll)
+        for(int coll = 0; coll < match3::GRID_SIZE; ++coll)
         {
             if(m_circles[row][coll] != nullptr)
             {
@@ -79,11 +79,12 @@ void Field::render(QPainter& painter)
                     m_selected_pos->first == row &&
                     m_selected_pos->second == coll)
                 {
-                    painter.setPen(QPen(Qt::white, 3));
+                    painter.setPen(QPen(Qt::white, match3::SELECTION_RING_THICKNESS));
                     painter.setBrush(Qt::NoBrush);
+                    // outline ellipse of choosen circle
                     painter.drawEllipse(m_circles[row][coll]->getCenter(),
-                                        m_circles[row][coll]->getRadius() + 4,
-                                        m_circles[row][coll]->getRadius() + 4);
+                                        m_circles[row][coll]->getRadius() + match3::SELECTION_RING_OFFSET,
+                                        m_circles[row][coll]->getRadius() + match3::SELECTION_RING_OFFSET);
                 }
             }
         }
@@ -111,9 +112,9 @@ void Field::click(int x, int y)
 {
     std::pair<int, int> clicked_pos = {-1, -1};
 
-    for(int row = 0; row < 10; ++row)
+    for(int row = 0; row < match3::GRID_SIZE; ++row)
     {
-        for(int coll = 0; coll < 10; ++coll)
+        for(int coll = 0; coll < match3::GRID_SIZE; ++coll)
         {
             if(m_circles[row][coll] != nullptr)
             {

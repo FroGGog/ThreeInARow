@@ -44,6 +44,7 @@ else()
             field.h
             igameobject.h
             memory_pool.h
+            constants.h
         )
     endif()
 endif()

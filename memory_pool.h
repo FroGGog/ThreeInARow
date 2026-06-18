@@ -22,8 +22,8 @@ public:
             }
         }
 
-        MemoryPool* m_pool;
-        size_t m_index;
+        MemoryPool* m_pool = nullptr;
+        size_t m_index = 0;
     };
 
 public:
